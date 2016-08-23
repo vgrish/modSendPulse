@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="f5d564b0-f89b-4109-ab61-955c8cccaf65" name="sendPuls" url="http://s6200.h3.modhost.pro">
+        <fileTransfer host="s6200.h3.modhost.pro" port="22" rootFolder="/home/s6200" accessType="SFTP" password="dfe4dffbdfd3dfd0dfcfdfc9dfdddfccdfc7dffadfe8dfef" username="s6200">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" />
+          </advancedOptions>
+          <option name="port" value="22" />
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>
