@@ -5,6 +5,9 @@ ini_set('error_reporting', -1);
 
 /**
  * The base class for modsendpulse.
+ *
+ * https://sendpulse.com/ru/integrations/api
+ * 
  */
 class modsendpulse
 {
@@ -96,6 +99,12 @@ class modsendpulse
         return $option;
     }
 
+    /**
+     * @param string $ctx
+     * @param array  $scriptProperties
+     *
+     * @return bool|mixed
+     */
     public function initialize($ctx = 'web', array $scriptProperties = array())
     {
         if (isset($this->initialized[$ctx])) {
@@ -347,6 +356,11 @@ class modsendpulse
         return $key . '/' . sha1(serialize($options));
     }
 
+    /**
+     * @param bool $cache
+     *
+     * @return mixed|null
+     */
     public function getToken($cache = true)
     {
         $tmp = array(
@@ -363,6 +377,11 @@ class modsendpulse
     }
 
 
+    /**
+     * @param string $mode
+     *
+     * @return mixed|null|string
+     */
     protected function sendPulseApiUrl($mode = '')
     {
         $url = $this->getOption('api_url', null, 'https://api.sendpulse.com', true);
@@ -371,6 +390,11 @@ class modsendpulse
         return $url;
     }
 
+    /**
+     * @param array $params
+     *
+     * @return array|mixed
+     */
     protected function sendPulseGetToken(array $params = array())
     {
         $mode = '/oauth/access_token/';
@@ -379,21 +403,317 @@ class modsendpulse
             'client_id'     => $this->getOption('client_id', null),
             'client_secret' => $this->getOption('client_secret', null),
         ), $params);
-        $data = $this->request($mode, $params, false);
+        $data = $this->request($mode, $params, 'POST', false);
 
         return $data;
     }
 
+    /**
+     * @param array $params
+     *
+     * @return array|mixed
+     */
     public function sendPulseCreateAddressBook(array $params = array())
     {
         $mode = '/addressbooks/';
         $params = array_merge(array(
             'bookName' => null,
         ), $params);
+        $data = $this->request($mode, $params, 'POST');
+
+        return $data;
+    }
+
+    /**
+     * @param array $params
+     *
+     * @return array|mixed
+     */
+    public function sendPulseEditAddressBook(array $params = array())
+    {
+        $mode = '/addressbooks/' . $this->getOption('id', $params);
+        $params = array_merge(array(
+            'name' => null,
+        ), $params);
+        $data = $this->request($mode, $params, 'PUT');
+
+        return $data;
+    }
+
+
+    /**
+     * @param array $params
+     *
+     * @return array|mixed
+     */
+    public function sendPulseRemoveAddressBook(array $params = array())
+    {
+        $mode = '/addressbooks/' . $this->getOption('id', $params);
+        $data = $this->request($mode, $params, 'DELETE');
+
+        return $data;
+    }
+
+    /**
+     * @param array $params
+     *
+     * @return array|mixed
+     */
+    public function sendPulseGetAddressBook(array $params = array())
+    {
+        $mode = '/addressbooks/';
+        $params = array_merge(array(
+            'limit'  => 0,
+            'offset' => null,
+        ), $params);
+        $data = $this->request($mode, $params, 'GET');
+
+        return $data;
+    }
+
+    /**
+     * @param array $params
+     *
+     * @return array|mixed
+     */
+    public function sendPulseGetBookInfo(array $params = array())
+    {
+        $mode = '/addressbooks/' . $this->getOption('id', $params);
+        $data = $this->request($mode, $params, 'GET');
+
+        return $data;
+    }
+
+    /**
+     * @param array $params
+     *
+     * @return array|mixed
+     */
+    public function sendPulseGetEmailsFromBook(array $params = array())
+    {
+        $mode = '/addressbooks/' . $this->getOption('id', $params) . '/emails';
+        $data = $this->request($mode, $params, 'GET');
+
+        return $data;
+    }
+
+    /**
+     * @param array $params
+     *
+     * @return array|mixed
+     */
+    public function sendPulseAddEmailsToBook(array $params = array())
+    {
+        $mode = '/addressbooks/' . $this->getOption('id', $params) . '/emails';
+        $params = array_merge(array(
+            'emails' => array(
+//                array(
+//                    "email"     => "test@test.com",
+//                    "variables" => array(
+//                        "phone" => '111111111'
+//                    )
+//
+//                )
+            )
+        ), $params);
+        $params['emails'] = serialize($params['emails']);
+        $data = $this->request($mode, $params, 'POST');
+
+        return $data;
+    }
+
+    /**
+     * @param array $params
+     *
+     * @return array|mixed
+     */
+    public function sendPulseRemoveEmailsFromBook(array $params = array())
+    {
+        $mode = '/addressbooks/' . $this->getOption('id', $params) . '/emails';
+        $params = array_merge(array(
+            'emails' => array(//"test@test.com",
+            )
+        ), $params);
+        $params['emails'] = serialize($params['emails']);
+        $data = $this->request($mode, $params, 'DELETE');
+
+        return $data;
+    }
+
+    /**
+     * @param array $params
+     *
+     * @return array|mixed
+     */
+    public function sendPulseGetEmailInfoFromBook(array $params = array())
+    {
+        $mode = '/addressbooks/' . $this->getOption('id', $params) . '/emails/' . $this->getOption('email', $params);
         $data = $this->request($mode, $params);
 
         return $data;
     }
+
+    /**
+     * @param array $params
+     *
+     * @return array|mixed
+     */
+    public function sendPulseCampaignCost(array $params = array())
+    {
+        $mode = '/addressbooks/' . $this->getOption('id', $params) . '/cost';
+        $data = $this->request($mode, $params, 'GET');
+
+        return $data;
+    }
+
+    /**
+     * @param array $params
+     *
+     * @return array|mixed
+     */
+    public function sendPulseGetCampaigns(array $params = array())
+    {
+        $mode = '/campaigns/';
+        $params = array_merge(array(
+            'limit'  => null,
+            'offset' => null,
+        ), $params);
+        $data = $this->request($mode, $params, 'GET');
+
+        return $data;
+    }
+
+    /**
+     * @param array $params
+     *
+     * @return array|mixed
+     */
+    public function sendPulseGetCampaignInfo(array $params = array())
+    {
+        $mode = '/campaigns/' . $this->getOption('id', $params);
+        $data = $this->request($mode, $params, 'GET');
+
+        return $data;
+    }
+
+    /**
+     * @param array $params
+     *
+     * @return array|mixed
+     */
+    public function sendPulseRemoveCampaign(array $params = array())
+    {
+        $mode = '/campaigns/' . $this->getOption('id', $params);
+        $data = $this->request($mode, $params, 'DELETE');
+
+        return $data;
+    }
+
+    /**
+     * @param array $params
+     *
+     * @return array|mixed
+     */
+    public function sendPulseGetSenders(array $params = array())
+    {
+        $mode = '/senders/';
+        $data = $this->request($mode, null, 'DELETE');
+
+        return $data;
+    }
+
+    /**
+     * @param array $params
+     *
+     * @return array|mixed
+     */
+    public function sendPulseAddSender(array $params = array())
+    {
+        $mode = '/senders/';
+        $params = array_merge(array(
+            'email' => null,
+            'name'  => null,
+        ), $params);
+        $data = $this->request($mode, $params, 'POST');
+
+        return $data;
+    }
+
+    /**
+     * @param array $params
+     *
+     * @return array|mixed
+     */
+    public function sendPulseRemoveSender(array $params = array())
+    {
+        $mode = '/senders/';
+        $params = array_merge(array(
+            'email' => null,
+        ), $params);
+        $data = $this->request($mode, $params, 'DELETE');
+
+        return $data;
+    }
+
+    /**
+     * @param array $params
+     *
+     * @return array|mixed
+     */
+    public function sendPulseGetEmailInfo(array $params = array())
+    {
+        $mode = '/emails/' . $this->getOption('email', $params);
+        $data = $this->request($mode, $params, 'GET');
+
+        return $data;
+    }
+
+    /**
+     * @param array $params
+     *
+     * @return array|mixed
+     */
+    public function sendPulseRemoveEmail(array $params = array())
+    {
+        $mode = '/emails/' . $this->getOption('email', $params);
+        $data = $this->request($mode, $params, 'DELETE');
+
+        return $data;
+    }
+
+
+    /**
+     * @param array $params
+     *
+     * @return array|mixed
+     */
+    public function sendPulseGetBalance(array $params = array())
+    {
+        $mode = '/balance/' . strtoupper($this->getOption('currency', $params));
+        $data = $this->request($mode, $params, 'GET');
+
+        return $data;
+    }
+
+    /**
+     * @param array $params
+     *
+     * @return array|mixed
+     */
+    public function sendPulseSmtpSendMail(array $params = array())
+    {
+        $mode = '/smtp/emails/';
+        $params = array_merge(array(
+            'emails' => array(),
+            'html'   => null,
+        ), $params);
+        $params['html'] = base64_encode($params['html']);
+        $params['emails'] = serialize($params['emails']);
+        $data = $this->request($mode, $params, 'POST');
+
+        return $data;
+    }
+
 
     /**
      * @param string $mode
@@ -402,70 +722,58 @@ class modsendpulse
      *
      * @return array|mixed
      */
-    public function request($mode = '', $params = null, $isToken = true, $url = '')
+    public function request($mode = '', $params = null, $method = 'GET', $isToken = true, $url = '')
     {
-        $mode = trim($mode, '/');
+        $mode = trim($mode, ' / ');
 
         if (empty($url)) {
             $url = $this->sendPulseApiUrl($mode);
         }
 
-        $ch = curl_init($url);
+        $ch = curl_init();
 
         if ($isToken AND $this->token) {
             $headers = array('Authorization: Bearer ' . $this->token);
             curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         }
 
+        $method = strtoupper($method);
+        switch ($method) {
+            case 'POST':
+                curl_setopt($ch, CURLOPT_POST, count($params));
+                curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($params));
+                break;
+            case 'PUT':
+                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
+                curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($params));
+                break;
+            case 'DELETE':
+                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
+                curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($params));
+                break;
+            default:
+                if (!empty($params)) {
+                    $url .= ' ? ' . http_build_query($params);
+                }
+        }
+
         curl_setopt_array(
             $ch,
             array(
-                CURLOPT_POST           => count($params),
+                CURLOPT_URL            => $url,
                 CURLOPT_SSL_VERIFYPEER => 0,
                 CURLOPT_SSL_VERIFYHOST => 0,
                 CURLOPT_RETURNTRANSFER => 1,
+                CURLOPT_HEADER         => 0
             )
         );
 
-        if (count($params)) {
-            curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($params));
-        }
-
         $data = curl_exec($ch);
         curl_close($ch);
-        $data = $this->prepareData($data, $mode);
+        $data = json_decode($data, true);
         $this->log('', $data);
 
         return $data;
     }
 
-    /**
-     * @param array  $response
-     * @param string $mode
-     *
-     * @return array
-     */
-    protected function prepareData($data, $mode = '')
-    {
-        $mode = strtolower($mode);
-
-        $this->modx->log(1, print_r($mode, 1));
-
-        switch ($mode) {
-            case '':
-                break;
-            case 'oauth/access_token':
-                $data = json_decode($data, true);
-                break;
-            default:
-                $data = json_decode($data, true);
-               /* if (empty($data['ok'])) {
-                    $this->log('', $data, true);
-                }
-                $data = isset($data['result']) ? $data['result'] : array();*/
-                break;
-        }
-
-        return $data;
-    }
 }
