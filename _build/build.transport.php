@@ -10,9 +10,9 @@ header('Content-Type:text/html;charset=utf-8');
 
 require_once 'build.config.php';
 // Refresh model
-if (file_exists('build.model.php')) {
+/*if (file_exists('build.model.php')) {
     require_once 'build.model.php';
-}
+}*/
 
 /* define sources */
 $root = dirname(dirname(__FILE__)) . '/';
@@ -264,9 +264,6 @@ $builder->setPackageAttributes(array(
     'license'       => file_get_contents($sources['docs'] . 'license.txt'),
     'readme'        => file_get_contents($sources['docs'] . 'readme.txt'),
     'chunks'        => $BUILD_CHUNKS,
-    'setup-options' => array(
-        'source' => $sources['build'] . 'setup.options.php',
-    ),
 ));
 $modx->log(modX::LOG_LEVEL_INFO, 'Added package attributes and setup options.');
 
@@ -297,7 +294,7 @@ if (defined('PKG_AUTO_INSTALL') && PKG_AUTO_INSTALL) {
             'workspace'     => 1,
             'provider'      => 0,
             'source'        => $signature . '.transport.zip',
-            'package_name'  => $sig[0],
+            'package_name'  => PKG_NAME,
             'version_major' => $versionSignature[0],
             'version_minor' => !empty($versionSignature[1]) ? $versionSignature[1] : 0,
             'version_patch' => !empty($versionSignature[2]) ? $versionSignature[2] : 0,

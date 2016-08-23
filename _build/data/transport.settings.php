@@ -4,6 +4,21 @@ $settings = array();
 
 $tmp = array(
 
+    'api_url'         => array(
+        'value' => 'https://api.sendpulse.com',
+        'xtype' => 'textfield',
+        'area'  => 'modsendpulse_main',
+    ),
+    'client_id'      => array(
+        'value' => '',
+        'xtype' => 'textfield',
+        'area'  => 'modsendpulse_main',
+    ),
+    'client_secret'  => array(
+        'value' => '',
+        'xtype' => 'textfield',
+        'area'  => 'modsendpulse_main',
+    ),
 
     //временные
     'assets_path' => array(
