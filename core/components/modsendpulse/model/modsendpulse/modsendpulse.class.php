@@ -7,7 +7,7 @@ ini_set('error_reporting', -1);
  * The base class for modsendpulse.
  *
  * https://sendpulse.com/ru/integrations/api
- * 
+ *
  */
 class modsendpulse
 {
@@ -695,6 +695,24 @@ class modsendpulse
         return $data;
     }
 
+
+    public function sendPulseGetSmtpIps()
+    {
+        $mode = '/smtp/ips/';
+        $data = $this->request($mode, null, 'GET');
+
+        return $data;
+    }
+
+
+    public function sendPulseGetSmtpDomains()
+    {
+        $mode = '/smtp/domains/';
+        $data = $this->request($mode, null, 'GET');
+
+        return $data;
+    }
+
     /**
      * @param array $params
      *
@@ -704,11 +722,19 @@ class modsendpulse
     {
         $mode = '/smtp/emails/';
         $params = array_merge(array(
-            'emails' => array(),
-            'html'   => null,
+            'email' => array(
+                'html'        => null,
+                'text'        => null,
+                'subject'     => null,
+                'from'        => null,
+                'to'          => null,
+                'bcc'         => null,
+                'attachments' => null,
+            ),
         ), $params);
-        $params['html'] = base64_encode($params['html']);
-        $params['emails'] = serialize($params['emails']);
+
+        $params['email']['html'] = base64_encode($params['email']['html']);
+        $params['email'] = serialize($params['email']);
         $data = $this->request($mode, $params, 'POST');
 
         return $data;
@@ -716,7 +742,7 @@ class modsendpulse
 
 
     /**
-     * @param string $mode
+     * @param string $modexw
      * @param null   $params
      * @param string $url
      *
@@ -756,6 +782,8 @@ class modsendpulse
                     $url .= ' ? ' . http_build_query($params);
                 }
         }
+
+        $this->modx->log(1, print_r($url, 1));
 
         curl_setopt_array(
             $ch,
