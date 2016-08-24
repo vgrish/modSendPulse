@@ -48,6 +48,7 @@ switch ($modx->event->name) {
             $book = $modsendpulse->sendPulseGetAddressBookIdFromName(array('name' => $product->get('pagetitle')), true);
 
             switch (true) {
+                case $book AND $status == 0:
                 case $book AND $status == 2:
                     $modsendpulse->sendPulseAddEmailsToBook(array(
                         'id'     => $book,
