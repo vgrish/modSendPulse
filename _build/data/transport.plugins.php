@@ -2,15 +2,26 @@
 
 $plugins = array();
 
-$tmp = array(/*
-	'modsendpulse' => array(
-		'file' => 'modsendpulse',
-		'description' => '',
-		'events' => array(
-			'OnManagerPageInit' => array()
-		)
-	)
-	*/
+$tmp = array(
+    'modSendPulseUserRegister' => array(
+        'file'        => 'user.register',
+        'description' => '',
+        'events'      => array(
+            'OnUserFormSave' => array(
+                'priority' => 150
+            ),
+        )
+    ),
+    'modSendPulseUserPayOrder' => array(
+        'file'        => 'user.pay.order',
+        'description' => '',
+        'events'      => array(
+            'msOnChangeOrderStatus' => array(
+                'priority' => 150
+            ),
+        )
+    )
+
 );
 
 foreach ($tmp as $k => $v) {

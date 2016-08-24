@@ -617,7 +617,7 @@ class modsendpulse
     public function sendPulseGetSenders(array $params = array())
     {
         $mode = '/senders/';
-        $data = $this->request($mode, null, 'DELETE');
+        $data = $this->request($mode, null, 'GET');
 
         return $data;
     }
@@ -741,6 +741,27 @@ class modsendpulse
     }
 
 
+    public function sendPulseGetAddressBookIdFromName(array $params = array(), $create = false)
+    {
+        $id = null;
+        if ($name = mb_strtolower($this->getOption('name', $params), 'utf-8')) {
+            $books = $this->sendPulseGetAddressBook();
+            foreach ($books as $book) {
+                if ($name == mb_strtolower($book['name'], 'utf-8')) {
+                    $id = $book['id'];
+                    break;
+                }
+            }
+        }
+
+        if (!$id AND $create) {
+            $response = $this->sendPulseCreateAddressBook(array('bookName' => $name));
+            $id = $this->getOption('id', $response);
+        }
+
+        return $id;
+    }
+
     /**
      * @param string $modexw
      * @param null   $params
@@ -779,11 +800,9 @@ class modsendpulse
                 break;
             default:
                 if (!empty($params)) {
-                    $url .= ' ? ' . http_build_query($params);
+                    $url .= '?' . http_build_query($params);
                 }
         }
-
-        $this->modx->log(1, print_r($url, 1));
 
         curl_setopt_array(
             $ch,
@@ -797,8 +816,16 @@ class modsendpulse
         );
 
         $data = curl_exec($ch);
+        $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
         curl_close($ch);
-        $data = json_decode($data, true);
+
+        if (in_array($code, array('401', '500'))) {
+            $this->log('Error', $data, true);
+            $data = array();
+        } else {
+            $data = json_decode($data, true);
+        }
         $this->log('', $data);
 
         return $data;
