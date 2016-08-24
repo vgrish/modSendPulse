@@ -20,12 +20,12 @@ $tmp = array(
         'area'  => 'modsendpulse_main',
     ),
 
-    'addressbook_user_register' => array(
+    'addressbook_user_create' => array(
         'value' => '538999',
         'xtype' => 'textfield',
         'area'  => 'modsendpulse_addressbooks',
     ),
-    'addressbook_user_pay'      => array(
+    'addressbook_user_pay_order'      => array(
         'value' => '',
         'xtype' => 'textfield',
         'area'  => 'modsendpulse_addressbooks',

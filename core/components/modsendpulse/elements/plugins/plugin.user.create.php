@@ -10,7 +10,7 @@ $modsendpulse->initialize($modx->context->key);
 /** @var modX $modx */
 switch ($modx->event->name) {
 
-    case 'OnUserFormSave':
+    case 'OnUserSave':
 
         $mode = $modx->getOption('mode', $scriptProperties);
         if ($mode != modSystemEvent::MODE_NEW) {
@@ -21,17 +21,19 @@ switch ($modx->event->name) {
         if (
             !$user = $modx->getOption('user', $scriptProperties)
             OR
-            !$book = $modsendpulse->getOption('addressbook_user_register', null)
+            !$profile = $user->getOne('Profile')
+            OR
+            !$book = $modsendpulse->getOption('addressbook_user_create', null)
         ) {
             return;
         }
 
         $emails = array(
-            'email'     => $user->get('email'),
+            'email'     => $profile->get('email'),
             'variables' => array(
                 'Имя'       => $user->get('username'),
-                'Мобильный' => $user->get('mobilephone'),
-                'Город'     => $user->get('city'),
+                'Мобильный' => $profile->get('mobilephone'),
+                'Город'     => $profile->get('city'),
             )
         );
 
@@ -39,6 +41,6 @@ switch ($modx->event->name) {
             'id'     => $book,
             'emails' => array($emails)
         ));
-
+        
         break;
 }

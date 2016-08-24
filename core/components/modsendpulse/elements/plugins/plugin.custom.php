@@ -13,9 +13,6 @@ switch ($modx->event->name) {
     case 'msOnChangeOrderStatus':
 
         $status = $modx->getOption('status', $scriptProperties);
-        if ($status != 2) {
-            return;
-        }
 
         /** @var msOrder $order */
         /** @var modUser $user */
@@ -27,7 +24,7 @@ switch ($modx->event->name) {
             OR
             !$profile = $order->getOne('UserProfile')
             OR
-            !$book = $modsendpulse->getOption('addressbook_user_pay_order', null)
+            !$items = $order->getMany('Products')
         ) {
             return;
         }
@@ -41,10 +38,32 @@ switch ($modx->event->name) {
             )
         );
 
-        $modsendpulse->sendPulseAddEmailsToBook(array(
-            'id'     => $book,
-            'emails' => array($emails)
-        ));
+        /** @var msOrderProduct $item */
+        foreach ($items as $item) {
+            /** @var msProduct $product */
+            if (!$product = $item->getOne('Product')) {
+                continue;
+            }
+
+            $book = $modsendpulse->sendPulseGetAddressBookIdFromName(array('name' => $product->get('pagetitle')), true);
+
+            switch (true) {
+                case $book AND $status == 2:
+                    $modsendpulse->sendPulseAddEmailsToBook(array(
+                        'id'     => $book,
+                        'emails' => array($emails)
+                    ));
+                    break;
+                case $book AND $status == 4:
+                    $modsendpulse->sendPulseRemoveEmailsFromBook(array(
+                        'id'     => $book,
+                        'emails' => array($emails['email'])
+                    ));
+                    break;
+                default:
+                    break;
+            }
+        }
 
         break;
 }
