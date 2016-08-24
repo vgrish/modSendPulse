@@ -1,7 +1,7 @@
 <?php
 
-ini_set('display_errors', 1);
-ini_set('error_reporting', -1);
+//ini_set('display_errors', 1);
+//ini_set('error_reporting', -1);
 
 /**
  * The base class for modsendpulse.
@@ -117,8 +117,8 @@ class modsendpulse
         if ($ctx != 'mgr' AND (!defined('MODX_API_MODE') OR !MODX_API_MODE)) {
 
         }
-
-        $load = !empty($this->getToken());
+        $this->getToken();
+        $load = !empty($this->token);
         $this->initialized[$ctx] = $load;
 
         return $load;
