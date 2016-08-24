@@ -10,7 +10,7 @@ $tmp = array(
         'area'  => 'modsendpulse_main',
     ),
     'client_id'     => array(
-        'value' => '', 
+        'value' => '',
         'xtype' => 'textfield',
         'area'  => 'modsendpulse_main',
     ),
